@@ -1,0 +1,126 @@
+{{extend '../_layouts/home.html'}}
+
+{{block 'title'}}{{'多人博客 - 首页'}}{{/block}}
+{{block 'head'}}
+<link rel="stylesheet" href="../../public/css/settings.css">
+{{/block}}
+{{block 'body'}}
+<section class="container">
+  {{include '../_partials/settings-nav.html'}}
+  <div class="col-md-5">
+    <form id="save">
+      <div class="form-group">
+        <label for="exampleInputEmail1">账号</label>
+        <p class="form-control-static">{{ user.email }}</p>
+      </div>
+      <div class="form-group">
+        <label for="bio">昵称</label>
+        <input type="text" class="form-control" name="bio" placeholder="" value="{{ user.bio }}">
+      </div>
+      <div class="form-group">
+        <label for="Introduction">介绍</label>
+        <textarea class="form-control" rows="3" name="Introduction">{{ user.Introduction }}</textarea>
+      </div>
+      <div class="form-group">
+        <label for="gender">性别</label>
+        <div>
+          {{ if user.gender == 0  }}
+          <label class="radio-inline">
+            <input type="radio" name="gender" value="0" checked> 男
+          </label>
+          {{ else}}
+          <label class="radio-inline">
+            <input type="radio" name="gender" value="0"> 男
+          </label>
+          {{ /if }}
+          {{ if user.gender == 1  }}
+          <label class="radio-inline">
+            <input type="radio" name="gender" value="1" checked> 女
+          </label>
+          {{ else}}
+          <label class="radio-inline">
+            <input type="radio" name="gender" value="1"> 女
+          </label>
+          {{ /if }}
+          {{ if user.gender == -1  }}
+          <label class="radio-inline">
+            <input type="radio" name="gender" value="-1" checked> 保密
+          </label>
+          {{ else}}
+          <label class="radio-inline">
+            <input type="radio" name="gender" value="-1"> 保密
+          </label>
+          {{ /if }}
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="birthday">生日</label>
+        <input type="date" class="form-control" name="birthday" placeholder="" value="{{ user.birthday }}">
+      </div>
+      <input type="hidden" name="avatar" id="hiavatar" value="{{ user.avatar }}">
+      <button type="submit" class="btn btn-success">保存</button>
+    </form>
+  </div>
+  <div class="col-md-2 profile-avatar">
+    <dl>
+      <dt>头像设置</dt>
+      <dd>
+        <div width="150" height="150">
+          <img class="avatar" id="avatar" width="150" height="150" src="..{{ user.avatar }}" alt="">
+        </div>
+        <div>
+          <button class="btn btn-default" href="">上传图片<input type="file" name="" id="file"></button>
+        </div>
+      </dd>
+    </dl>
+  </div>
+</section>
+<script src="/node_modules/jquery/dist/jquery.js"></script>
+<script>
+  // 图片上传
+  $('#file').on('change', function (e) {
+    // console.log(this[0].files)
+    var windowURL = window.URL || window.webkitURL;
+    var dataURL = windowURL.createObjectURL(e.target.files[0]);
+    console.log(dataURL)
+    // 获取file域里的图片信息
+    var formData = new FormData()
+     //创建formdata对象
+    formData.append("test",e.target.files[0])  
+    // 将文件信息 append 进入formdata对象  key值 为后台 single 设置的值  
+    $.ajax({
+        url: '/upload',
+        type: 'POST',
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function(data){
+           if (data.err==0) {
+              $('#avatar').attr('src',data.data)
+              $('#hiavatar').val(data.data)
+           }
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+          console.log(500)
+        }
+    });
+  })
+
+  // 保存信息
+  $('#save').on('submit', function (e) {
+      e.preventDefault()
+      var formData = $(this).serialize()
+      $.ajax({
+        url: '/settings/profile',
+        type: 'post',
+        data: formData,
+        dataType: 'json',
+        success: function (data) {
+          window.alert('修改成功')
+          window.location.href = '/settings/profile'
+        }
+      })
+    })
+</script>
+{{/block}}

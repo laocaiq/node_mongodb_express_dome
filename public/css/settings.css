@@ -1,0 +1,11 @@
+.profile-avatar dt {
+  margin-bottom: 10px;
+}
+
+.profile-avatar .avatar {
+  margin-bottom: 10px;
+}
+
+.btn.btn-default{position: relative;}
+#file{position: absolute;width:100%;height: 100%;top:0;left:0;opacity: 0;}
+.avatar{display: block;}

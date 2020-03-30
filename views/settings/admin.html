@@ -1,0 +1,85 @@
+{{extend '../_layouts/home.html'}}
+
+{{block 'title'}}{{'多人博客 - 首页'}}{{/block}}
+
+{{block 'active'}}
+  <a href="/settings/profile" class="list-group-item">基本信息</a>
+  <a href="/settings/admin" class="list-group-item active">账户设置</a>
+{{/block}}
+
+{{block 'body'}}
+<section class="container">
+  {{include '../_partials/settings-nav.html'}}
+  <div class="col-md-5">
+    <div class="subhead">
+      <h2>修改密码</h2>
+    </div>
+    <hr>
+    <form id="save">
+      <div class="form-group">
+        <label for="exampleInputPassword1">当前密码</label>
+        <input type="password" class="form-control" placeholder="" name="password">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">新的密码</label>
+        <input type="password" class="form-control" placeholder="" name="Newpassword">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">确认密码</label>
+        <input type="password" class="form-control" placeholder="" name="Newpassword2">
+      </div>
+      <button type="submit" class="btn btn-success">保存</button>
+    </form>
+    <div class="subhead">
+      <h2>注销账号</h2>
+      <hr>
+    </div>
+    <div>
+      <p>一旦注销，不可找回，请谨慎操作</p>
+      <button class="btn btn-danger" id="delete">删除</button>
+    </div>
+    <hr>
+  </div>
+</section>
+<script src="/node_modules/jquery/dist/jquery.js"></script>
+<script>
+  // 保存信息
+  $('#save').on('submit', function (e) {
+    // 这块理论上需要前后端都要对密码进行判空和密码核对，但我们主要讨论后端对密码的处理
+    e.preventDefault()
+    var formData = $(this).serialize()
+    $.ajax({
+      url: '/settings/admin',
+      type: 'post',
+      data: formData,
+      dataType: 'json',
+      success: function (data) {
+        console.log(data)
+        if(data.err_code == 200){
+          window.alert(data.message)
+          window.location.href = '/login'
+        }else if(data.err_code == 500){
+          window.alert(data.message)
+        }
+      }
+    })
+  })
+
+  // 账号删除
+  $('#delete').click((e) => {
+    e.preventDefault()
+    $.ajax({
+      url: '/settings/delete',
+      type: 'post',
+      dataType: 'json',
+      success: function (data) {
+        console.log(data)
+        if(data.err_code == 200){
+          window.alert(data.message)
+          window.location.href = '/login'
+        }
+      }
+    })
+  })
+</script>
+{{/block}}

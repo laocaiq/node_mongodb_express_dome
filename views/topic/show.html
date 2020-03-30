@@ -1,0 +1,73 @@
+{{extend '../_layouts/home.html'}}
+
+{{block 'title'}}{{'多人博客 - 首页'}}{{/block}}
+
+{{block 'head'}}
+<link rel="stylesheet" href="/public/css/markdown-github.css">
+<style>
+  .panel .panel-heading .action i {
+    margin-right: 10px;
+  }
+</style>
+{{/block}}
+
+{{block 'body'}}
+<section class="container">
+  <div class="row">
+    <div class="col-md-9">
+      <article class="markdown-body">
+        <h1 id="_1">{{ show.title }}</h1>
+        <blockquote>
+          <p>{{ show.plate_id.title }}模块</p>
+        </blockquote>
+        <p>{{ show.content }}</p>
+      </article>
+      {{ each evaluation}}
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <img src="{{ $value.Avatar }}" alt="" srcset="" width="30" height="30">
+          <span>{{ $value.nickname }}</span> 
+          <span>  {{ $value.time | dateFormat 'yyyy-MM-dd hh:mm:ss' }}</span>
+        </div>
+        <div class="panel-body">
+          {{ $value.content }}
+        </div>
+      </div>
+      {{ /each }}
+      <hr>
+      <form id="save">
+        <div class="form-group">
+          <label for="exampleInputPassword1">添加回复</label>
+          <input type="hidden" name="Avatar" value="{{ user.avatar }}">
+          <input type="hidden" name="nickname" value="{{ user.nickname }}">
+          <textarea class="form-control" name="content" cols="10" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">回复</button>
+      </form>
+    </div>
+  </div>
+</section>
+<script src="/node_modules/jquery/dist/jquery.js"></script>
+<script>
+  // 保存信息
+  $('#save').on('submit', function (e) {
+    e.preventDefault()
+    var formData = $(this).serialize()
+    // console.log(formData)
+    $.ajax({
+      url: '/topic/show',
+      type: 'post',
+      data: formData,
+      dataType: 'json',
+      success: function (data) {
+        if(data.err_code === 200){
+          window.alert('修改成功')
+          window.location.reload()
+        }else{
+          window.alert('修改失败')
+        }
+      }
+    })
+  })
+</script>
+{{/block}}
